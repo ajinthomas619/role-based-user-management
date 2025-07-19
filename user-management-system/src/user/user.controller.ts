@@ -23,7 +23,7 @@ export class UserController {
 
   @Post()
   async createUser(@Body() payload: createUserDto, @Req() req) {
-    return await this.userService.createUser(payload, req);
+    return await this.userService.createUser(payload, req.user);
   }
 
   @Get()
