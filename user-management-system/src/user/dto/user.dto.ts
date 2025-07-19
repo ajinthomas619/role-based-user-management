@@ -1,25 +1,52 @@
 import { Type } from '@nestjs/class-transformer';
-import { IsNumber, IsOptional, IsString, Min } from '@nestjs/class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  Min,
+  MinLength,
+} from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class createUserDto {
   @ApiProperty({
     description: 'First Name',
   })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(50)
   first_name: string;
 
   @ApiProperty({
     description: 'Last Name',
   })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(50)
   last_name: string;
 
   @ApiProperty({
     description: 'Email',
   })
+  @IsNotEmpty()
+  @IsEmail()
   email: string;
 
   @ApiProperty({
     description: 'Password',
+  })
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(32)
+  @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).*$/, {
+    message:
+      'Password must contain uppercase letter, number, and special character',
   })
   password: string;
 
@@ -33,6 +60,8 @@ export class createUserDto {
   @ApiProperty({
     description: 'User Role',
   })
+  @IsNotEmpty()
+  @IsNumber()
   role_id: number;
 }
 
