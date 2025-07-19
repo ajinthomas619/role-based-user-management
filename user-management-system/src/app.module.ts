@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/role.module';
 import { CompanyModule } from './companies/company.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -23,13 +24,20 @@ import { CompanyModule } from './companies/company.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-       signOptions: { expiresIn: process.env.JWT_TOKEN_EXPIRE || '7h' },
+ JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_TOKEN_EXPIRE') || '7h',
+        },
+      }),
     }),
     AuthModule,
     RolesModule,
-    CompanyModule
+    CompanyModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
